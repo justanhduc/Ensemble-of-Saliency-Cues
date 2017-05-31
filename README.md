@@ -11,6 +11,10 @@ This implementation calls two deep learning methods written in Python.
 
 Other miscellaneous [requirements](https://github.com/imatge-upc/saliency-salgan-2017/blob/master/requirements.txt)
 
+[VGG16 Weights](https://s3.amazonaws.com/lasagne/recipes/pretrained/imagenet/vgg16.pkl) for SalGan. Store it somewhere and specify the path in constant.py
+
+[ResNet Weights](https://github.com/marcellacornia/sam/releases/download/1.0/sam-resnet_salicon_weights.pkl) for SAM. Put it in sam/weights
+
 Note: The codes of the 2 deep models have been modified so the codes from the original sources won't work here.
 ## Usage:
 In Matlab, type:
