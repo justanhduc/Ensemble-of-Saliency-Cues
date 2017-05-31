@@ -12,6 +12,7 @@ This implementation calls two deep learning methods written in Python.
 Other miscellaneous [requirements](https://github.com/imatge-upc/saliency-salgan-2017/blob/master/requirements.txt)
 
 ## Usage:
+In Matlab, type:
 ```
 imgLoc = 'p31.jpg';
 s = predictSaliency(imgLoc);
