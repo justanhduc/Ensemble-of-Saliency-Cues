@@ -11,6 +11,7 @@ This implementation calls two deep learning methods written in Python.
 
 Other miscellaneous [requirements](https://github.com/imatge-upc/saliency-salgan-2017/blob/master/requirements.txt)
 
+Note: The codes of the 2 deep models have been modified so the codes from the original sources won't work here.
 ## Usage:
 In Matlab, type:
 ```
