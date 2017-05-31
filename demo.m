@@ -1,4 +1,4 @@
 clear; clc; close all;
 
 imgLoc = 'p31.jpg';
-s = predictSaliency(imgLoc);
+s = predictSaliency(imgLoc,true,true);

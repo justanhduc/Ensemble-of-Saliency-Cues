@@ -1,6 +1,15 @@
-function saliency = predictSaliency(imgLoc)
+function saliency = predictSaliency(imgLoc,show,saveImg)
 %PREDICTSALIENCY Summary of this function goes here
 %   Detailed explanation goes here
+if nargin == 1
+    show = 0;
+    saveImg = 0;
+elseif nargin == 2
+    saveImg = 0;
+elseif nargin > 3 || nargin < 1
+    error('Unexpected number of input arguments!');
+end
+
 img = imread(imgLoc);
 
 imgPath = strsplit(imgLoc,'/');
@@ -34,23 +43,46 @@ mkdir('saliency_salgan');
 integrate('predictions_sam',imgName,'saliency_sam');
 integrate('predictions_salgan',imgName,'saliency_salgan');
 
-sal1 = mat2gray(imresize(imread(sprintf('saliency_sam/%s',imgName)),[128 256]));
-sal2 = mat2gray(imresize(imread(sprintf('saliency_salgan/%s',imgName)),[128 256]));
-sal3 = mat2gray(imresize(imread('behavior.jpg'),[128,256]));
+numFaces = 180;
+[x,y,z] = sphere(numFaces);
+coordinates = [x(:),y(:),z(:)];
+[~,IA,IC] = unique(coordinates,'rows');
+
+sal1 = imresize(mat2gray(imread(sprintf('saliency_sam/%s',imgName))),size(x));
+sal2 = imresize(mat2gray(imread(sprintf('saliency_salgan/%s',imgName))),size(x));
+sal3 = imresize(mat2gray(imread('behavior1.jpg')),size(x));
+sal1 = flipud(sal1);
+sal2 = flipud(sal2);
+sal3 = flipud(sal3);
+sal1 = sal1(:);
+sal2 = sal2(:);
+sal3 = sal3(:);
+sal1 = sal1(IA,:);
+sal2 = sal2(IA,:);
+sal3 = sal3(IA,:);
 
 fprintf('Combining saliency cues...\n');
 load optParams.mat;
 s = length(thetaOpt)/4;
-alphaOpt = reshape(thetaOpt(1:s),128,256);
-betaOpt = reshape(thetaOpt(s+1:2*s),128,256);
-gammaOpt = reshape(thetaOpt(2*s+1:3*s),128,256);
-lambdaOpt = reshape(thetaOpt(3*s+1:end),128,256);
+alphaOpt = thetaOpt(1:s);
+betaOpt = thetaOpt(s+1:2*s);
+gammaOpt = thetaOpt(2*s+1:3*s);
+lambdaOpt = thetaOpt(3*s+1:end);
 
 saliency = alphaOpt.*sal1 + betaOpt.*sal2 + gammaOpt.*sal3 + lambdaOpt;
-saliency = mat2gray(saliency);
-imwrite(saliency,sprintf('sal_%s',imgName));
-fprintf('Saliency image is saved to sal_%s\n',imgName);
-fprintf('Cleaning garbages...\n');
+saliency = saliency(IC,:);
+saliency = reshape(saliency,size(x));
+saliency = imresize(saliency,[128,256]);
+saliency = mat2gray(flipud(saliency));
+if show
+    figure; imshow(saliency);
+end
+if saveImg
+    imwrite(saliency,sprintf('sal_%s',imgName));
+    fprintf('Saliency image is saved to sal_%s\n',imgName);
+end
+
+fprintf('Collecting garbages...\n');
 rmdir 'saliency_salgan' s
 rmdir 'saliency_sam' s
 rmdir 'predictions_salgan' s
